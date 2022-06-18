@@ -1,8 +1,14 @@
+from collections import defaultdict
+
+
 class Project:
     def __init__(self, start, size, cost):
         self.start = start
         self.size = size
         self.cost = cost
+
+    def __repr__(self):
+        return '{start}/{end}/{cost}'.format(start=self.start, end=self.end, cost=self.cost)
 
     @property
     def end(self):
@@ -23,3 +29,11 @@ class Election:
         self.voters = voters
         self.projects = projects
         self.budget = budget
+
+    @property
+    def approvals_by_project(self):
+        total_project_approval = defaultdict(int)
+        for v in self.voters:
+            for p in self.approvals[v]:
+                total_project_approval[p] += 1
+        return total_project_approval
