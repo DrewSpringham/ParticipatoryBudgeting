@@ -24,10 +24,7 @@ def interval_knapsack_table(E: Election):
     P = list(sorted(E.projects, key=lambda p: p.end))
     W = E.budget
     # set up table
-    m = [[0 for w in range(W + 1)] for j in range(i + 1)]
-    # for j=0, we have m[0,w]=0
-    for w in range(W + 1):
-        m[0][w] = 0
+    m = [[0 for _ in range(W + 1)] for j in range(i + 1)]
     for j in range(i):
         for k in range(j, -2, -1):
             if P[k].end < P[j].start:
