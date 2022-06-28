@@ -1,12 +1,12 @@
 from src.election_instance import Election
-from tests.random_instances import random_project
+from tests.random_instances import random_project, random_instance
 
 
-def convert(filepath):
+# TODO: add compatibility for getting project dimensions
+def convert_to_election(filepath):
     meta = {}
     projects = set()
     voters = set()
-    phase = 0
     approvals = {}
     project_ids = {}
     with open(filepath, encoding="utf8") as f:
@@ -14,12 +14,12 @@ def convert(filepath):
 
         line_number = 2
         while lines[line_number] != "PROJECTS":
-            l = lines[line_number].split(";")
+            l = lines[line_number].replace(" ", "").split(";")
             meta[l[0]] = l[1]
             line_number += 1
 
         line_number += 1
-        l = lines[line_number].split(";")
+        l = lines[line_number].replace(" ", "").split(";")
         id_index = l.index("project_id")
         cost_index = l.index("cost")
         line_number += 1
@@ -32,12 +32,12 @@ def convert(filepath):
             line_number += 1
 
         line_number += 1
-        l = lines[line_number].split(";")
+        l = lines[line_number].replace(" ", "").split(";")
         id_index = l.index("voter_id")
         vote_index = l.index("vote")
         line_number += 1
         for line in lines[line_number:]:
-            l = line.split(";")
+            l = line.replace(" ", "").split(";")
             voter = l[id_index]
             votes = set(l[vote_index].split(","))
             approval = set([project_ids[v] for v in votes])
@@ -46,3 +46,33 @@ def convert(filepath):
     if meta["vote_type"] != "approval":
         raise ValueError("Cannot operate on non-approval elections!")
     return Election(voters, projects, approvals, int(meta["budget"]))
+
+
+def convert_to_file(E, filepath):
+    lines = []
+    lines.append("META")
+    lines.append("key; value")
+    lines.append(f"num_projects; {len(E.projects)}")
+    lines.append(f"num_votes; {len(E.voters)}")
+    lines.append(f"budget; {E.budget}")
+    lines.append(f"vote_type; approval")
+    lines.append("PROJECTS")
+    lines.append("project_id; cost; start; end")
+    project_ids = {}
+    for id_counter, p in enumerate(E.projects):
+        project_ids[p] = id_counter
+        lines.append(f"{id_counter}; {p.cost}; {p.start}; {p.end}")
+    lines.append("VOTES")
+    lines.append("voter_id; vote")
+    for id_counter, v in enumerate(E.voters):
+        approved = [str(project_ids[p]) for p in E.approvals[v]]
+        votes = ', '.join(approved)
+        lines.append(f"{id_counter}; {votes}")
+    with open(filepath, 'w') as f:
+        for l in lines:
+            f.write(f"{l}\n")
+
+
+E = random_instance(20, 5)
+convert_to_file(E, "tester.pb")
+_E = convert_to_election("tester.pb")
