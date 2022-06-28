@@ -24,18 +24,32 @@ def interval_knapsack_table(E: Election):
     P = list(sorted(E.projects, key=lambda p: p.end))
     W = E.budget
     # set up table
-    m = [[0 for _ in range(W + 1)] for _ in range(n + 1)]
-    for j in range(n):
-        for k in range(j, -2, -1):
-            if P[k].end < P[j].start:
+    m = [[None for _ in range(W + 1)] for _ in range(n + 1)]
+    for w in range(W + 1):
+        m[0][w] = 0
+    to_compute = [(n, W)]
+    while len(to_compute) > 0:
+        j, w = to_compute.pop()
+        wi = P[j - 1].cost
+        for k in range(j - 1, -2, -1):
+            if P[k].end < P[j - 1].start:
                 break
-        wi = P[j].cost
-        for w in range(W + 1):
-            if wi > w:
-                m[j + 1][w] = m[j][w]
+        if wi > w:
+            if m[j - 1][w] is None:
+                to_compute.append((j, w))
+                to_compute.append((j - 1, w))
             else:
-                vi = E.approvals_by_project[P[j]]
-                m[j + 1][w] = max(m[j][w], vi + m[k + 1][w - wi])
+                m[j][w] = m[j - 1][w]
+        else:
+            vi = E.approvals_by_project[P[j - 1]]
+            if m[j - 1][w] is not None and m[k + 1][w - wi] is not None:
+                m[j][w] = max(m[j - 1][w], vi + m[k + 1][w - wi])
+            else:
+                to_compute.append((j, w))
+                if m[j - 1][w] is None:
+                    to_compute.append((j - 1, w))
+                if m[k + 1][w - wi] is None:
+                    to_compute.append((k + 1, w - wi))
     return m
 
 
