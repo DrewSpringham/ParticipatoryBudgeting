@@ -28,7 +28,7 @@ def random_approvals(voters, projects):
 
 
 def random_instance(N, p):
-    voters = [i for i in range(1, N)]
+    voters = [i for i in range(1, N + 1)]
     projects = []
     for i in range(p):
         projects.append(random_project(1, p))
