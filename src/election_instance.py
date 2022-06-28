@@ -16,6 +16,7 @@ class Project:
 
 
 class Election:
+    _approvals_by_project = None
 
     def __init__(self, voters, projects, approvals, budget=1):
         """
@@ -32,8 +33,12 @@ class Election:
 
     @property
     def approvals_by_project(self):
-        total_project_approval = defaultdict(int)
-        for v in self.voters:
-            for p in self.approvals[v]:
-                total_project_approval[p] += 1
-        return total_project_approval
+        if self._approvals_by_project is not None:
+            return self._approvals_by_project
+        else:
+            total_project_approval = defaultdict(int)
+            for v in self.voters:
+                for p in self.approvals[v]:
+                    total_project_approval[p] += 1
+            self._approvals_by_project = total_project_approval
+            return total_project_approval
