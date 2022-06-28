@@ -43,7 +43,7 @@ def random_check(id, N, p):
     E = random_instance(10, 10)
     ik_result = interval_knapsack_projects(E)
 
-    if check_optimality(E, ik_result):
+    if not check_optimality(E, ik_result):
         pickle.dump(E, open("bad_instance" + str(id) + ".p", "wb"))
         raise ValueError("interval knapsack failed on:" + str())
 
