@@ -48,15 +48,15 @@ def random_check(id, N, p):
         raise ValueError("interval knapsack failed on:" + str())
 
 
-def random_checks(k):
+def random_checks(k, min_N=50, max_N=1000, min_p=5, max_p=15):
     for i in tqdm(range(k)):
-        N = random.randint(50, 1000)
-        p = random.randint(5, 15)
+        N = random.randint(min_N, max_N)
+        p = random.randint(min_p, max_p)
         random_check(i, N, p)
 
 
 def main():
-    random_checks(100000)
+    random_checks(100000, 100, 1000000, 5, 30)
 
 
 if __name__ == "__main__":
