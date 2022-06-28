@@ -40,7 +40,7 @@ def random_instance(N, p):
 
 
 def random_check(id, N, p):
-    E = random_instance(10, 10)
+    E = random_instance(N, p)
     ik_result = interval_knapsack_projects(E)
 
     if not check_optimality(E, ik_result):
@@ -56,7 +56,8 @@ def random_checks(k, min_N=50, max_N=1000, min_p=5, max_p=15):
 
 
 def main():
-    random_checks(100000, 100, 1000000, 5, 30)
+    E = random_instance(100000, 30)
+    ik_result = interval_knapsack_projects(E)
 
 
 if __name__ == "__main__":
