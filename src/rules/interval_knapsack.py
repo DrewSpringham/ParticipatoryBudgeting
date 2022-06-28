@@ -20,12 +20,12 @@ def from_table(E, P, m, i, w):
 
 
 def interval_knapsack_table(E: Election):
-    i = len(E.projects)
+    n = len(E.projects)
     P = list(sorted(E.projects, key=lambda p: p.end))
     W = E.budget
     # set up table
-    m = [[0 for _ in range(W + 1)] for j in range(i + 1)]
-    for j in range(i):
+    m = [[0 for _ in range(W + 1)] for _ in range(n + 1)]
+    for j in range(n):
         for k in range(j, -2, -1):
             if P[k].end < P[j].start:
                 break
