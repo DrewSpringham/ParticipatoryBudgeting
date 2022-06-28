@@ -2,12 +2,11 @@ import pickle
 import random
 from math import ceil
 
-from more_itertools import powerset
 from tqdm import tqdm
 
 from src.election_instance import *
-from src.helpers import verify_outcome
-from src.rules.interval_knapsack import interval_knapsack_score
+from src.helpers import check_optimality
+from src.rules.interval_knapsack import interval_knapsack_projects
 
 
 def random_project(min_cost, max_cost):
@@ -42,16 +41,9 @@ def random_instance(N, p):
 
 def random_check(id, N, p):
     E = random_instance(10, 10)
-    max_approvals = 0
-    max_project_set = None
-    for s in powerset(E.projects):
-        if verify_outcome(E, s):
-            total_approvals = sum([E.approvals_by_project[v] for v in s])
-            if total_approvals > max_approvals:
-                max_approvals = total_approvals
-                max_project_set = s
-    ik_result = interval_knapsack_score(E)
-    if ik_result != max_approvals:
+    ik_result = interval_knapsack_projects(E)
+
+    if check_optimality(E, ik_result):
         pickle.dump(E, open("bad_instance" + str(id) + ".p", "wb"))
         raise ValueError("interval knapsack failed on:" + str())
 
