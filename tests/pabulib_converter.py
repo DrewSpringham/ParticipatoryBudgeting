@@ -1,5 +1,4 @@
 from src.election_instance import Election
-from src.rules.interval_knapsack import interval_knapsack_projects
 from tests.random_instances import random_project
 
 
@@ -47,7 +46,3 @@ def convert(filepath):
     if meta["vote_type"] != "approval":
         raise ValueError("Cannot operate on non-approval elections!")
     return Election(voters, projects, approvals, int(meta["budget"]))
-
-
-E = convert("pb_files/poland_warszawa_2017_miedzeszyn.pb")
-print(interval_knapsack_projects(E))
