@@ -13,7 +13,10 @@ from src.rules.interval_knapsack import interval_knapsack_score
 def random_project(min_cost, max_cost):
     start = random.random()
     size = random.uniform(0, 1 - start)
-    cost = random.randint(min_cost, max_cost)
+    if min_cost == max_cost:
+        cost = min_cost
+    else:
+        cost = random.randint(min_cost, max_cost)
     return Project(start, size, cost)
 
 
