@@ -1,8 +1,6 @@
-from src.election_instance import Election
+from src.election_instance import Election, Project
 from tests.random_instances import random_project, random_instance
 
-
-# TODO: add compatibility for getting project dimensions
 def convert_to_election(filepath):
     meta = {}
     projects = set()
@@ -22,11 +20,22 @@ def convert_to_election(filepath):
         l = lines[line_number].replace(" ", "").split(";")
         id_index = l.index("project_id")
         cost_index = l.index("cost")
+        locational = True
+        try:
+            start_index = l.index("start")
+            end_index = l.index("end")
+        except ValueError:
+            locational = False
         line_number += 1
         while lines[line_number] != "VOTES":
             l = lines[line_number].split(";")
             cost = int(l[cost_index])
-            p = random_project(cost, cost)
+            if locational:
+                start = float(l[start_index])
+                end = float(l[end_index])
+                p = Project(start, end - start, cost)
+            else:
+                p = random_project(cost, cost)
             projects.add(p)
             project_ids[l[id_index]] = p
             line_number += 1
