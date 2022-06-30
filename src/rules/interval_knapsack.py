@@ -1,3 +1,5 @@
+import math
+
 from src.election_instance import *
 
 
@@ -17,6 +19,23 @@ def from_table(E, P, m, i, w):
         proj_set = from_table(E, P, m, k, w - wi)
         proj_set.add(P[i - 1])
     return proj_set
+
+
+# TODO: divisor not being computed properly? Rework this
+def reduce_weights(E):
+    divisor = math.gcd(*[p.cost for p in E.projects])
+    new_projects = set()
+    old_to_new = {}
+    new_approvals = {}
+    for p in E.projects:
+        new_p = Project(p.start, p.size, p.cost // divisor)
+        new_projects.add(p)
+        old_to_new[p] = new_p
+    for v in E.voters:
+        new_approvals[v] = set([old_to_new[p] for p in E.approvals[v]])
+    new_budget = E.budget // divisor
+
+    return Election(E.voters, new_projects, new_approvals, new_budget)
 
 
 def interval_knapsack_table(E: Election):
