@@ -8,7 +8,7 @@ from tests.pabulib_converter import convert_to_election
 
 
 def real_instances():
-    directory = "pb_files"
+    directory = "pb_files_loc"
     for filename in tqdm(os.listdir(directory)):
         f = os.path.join(directory, filename)
         # checking if it is a file
