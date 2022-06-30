@@ -47,12 +47,20 @@ def interval_knapsack_table(E: Election):
     for w in range(W + 1):
         m[0][w] = 0
     to_compute = [(n, W)]
+    j_to_k = {}
+    for j in range(n + 1):
+        found = False
+        for k in range(j - 1, -2, -1):
+            if P[k].end < P[j - 1].start:
+                j_to_k[j] = k
+                found = True
+                break
+        if not found:
+            j_to_k[j] = -1
     while len(to_compute) > 0:
         j, w = to_compute.pop()
         wi = P[j - 1].cost
-        for k in range(j - 1, -2, -1):
-            if P[k].end < P[j - 1].start:
-                break
+        k = j_to_k[j]
         if wi > w:
             if m[j - 1][w] is None:
                 to_compute.append((j, w))
