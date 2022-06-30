@@ -113,7 +113,7 @@ def interval_knapsack_table_reversed(E: Election):
             wi = P[i - 1].cost
             k = j_to_k[i]
             needed_util = max(u - vi, 0)
-            m[i][u] = min(wi + m[k][needed_util], m[i - 1][u])
+            m[i][u] = min(wi + m[k + 1][needed_util], m[i - 1][u])
 
     return m
 
@@ -123,20 +123,15 @@ def from_table_reversed(E, P, m, i, u):
         return set()
     wi = P[i - 1].cost
     vi = E.approvals_by_project[P[i - 1]]
-    if vi >= u:
-        if wi < m[i - 1][u]:
-            proj_set = set([P[i - 1]])
-        else:
-            proj_set = from_table_reversed(E, P, m, i - 1, u)
+    j_to_k = compute_preceding_projects(P)
+    k = j_to_k[i]
+    needed_util = max(u - vi, 0)
+    if m[i - 1][u] < wi + m[k + 1][needed_util]:
+        proj_set = from_table_reversed(E, P, m, i - 1, u)
     else:
-        j_to_k = compute_preceding_projects(P)
-        k = j_to_k[i]
-        if m[i - 1][u] < wi + m[k][u - vi]:
-            proj_set = from_table_reversed(E, P, m, i - 1, u)
-        else:
-            proj_set = from_table_reversed(E, P, m, k, u - vi)
+        proj_set = from_table_reversed(E, P, m, k + 1, needed_util)
 
-            proj_set.add(P[i - 1])
+        proj_set.add(P[i - 1])
     return proj_set
 
 
