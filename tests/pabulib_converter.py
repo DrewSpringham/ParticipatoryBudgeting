@@ -1,5 +1,8 @@
+import os
+
 from src.election_instance import Election, Project
-from tests.random_instances import random_project, random_instance
+from tests.random_instances import random_project
+
 
 def convert_to_election(filepath):
     meta = {}
@@ -15,7 +18,11 @@ def convert_to_election(filepath):
             l = lines[line_number].replace(" ", "").split(";")
             meta[l[0]] = l[1]
             line_number += 1
-
+        try:
+            comma = meta['budget'].index(",")
+            meta['budget'] = meta['budget'][:comma]
+        except ValueError:
+            pass
         line_number += 1
         l = lines[line_number].replace(" ", "").split(";")
         id_index = l.index("project_id")
@@ -82,6 +89,15 @@ def convert_to_file(E, filepath):
             f.write(f"{l}\n")
 
 
-E = random_instance(20, 5)
-convert_to_file(E, "tester.pb")
-_E = convert_to_election("tester.pb")
+def convert_real_instances():
+    read_directory = "pb_files"
+    write_directory = "pb_files_loc"
+    for filename in os.listdir(read_directory):
+        f = os.path.join(read_directory, filename)
+        # checking if it is a file
+        if os.path.isfile(f):
+            E = convert_to_election(f)
+            convert_to_file(E, write_directory + "/" + filename)
+
+
+convert_real_instances()
