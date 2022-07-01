@@ -99,5 +99,3 @@ def convert_real_instances():
             E = convert_to_election(f)
             convert_to_file(E, write_directory + "/" + filename)
 
-
-convert_real_instances()
