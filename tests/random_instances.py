@@ -39,25 +39,24 @@ def random_instance(N, p):
     return E
 
 
-def random_check(id, N, p):
+def random_check(id, N, p, rule):
     E = random_instance(N, p)
-    ik_result = interval_knapsack_projects(E)
+    ik_result = rule(E)
 
     if not check_optimality(E, ik_result):
         pickle.dump(E, open("bad_instance" + str(id) + ".p", "wb"))
         raise ValueError("interval knapsack failed on:" + str())
 
 
-def random_checks(k, min_N=50, max_N=1000, min_p=5, max_p=15):
+def random_checks(k, rule, min_N=50, max_N=1000, min_p=5, max_p=15):
     for i in tqdm(range(k)):
         N = random.randint(min_N, max_N)
         p = random.randint(min_p, max_p)
-        random_check(i, N, p)
+        random_check(i, N, p, rule)
 
 
 def main():
-    E = random_instance(100000, 30)
-    ik_result = interval_knapsack_projects(E)
+    random_checks(1000, interval_knapsack_projects)
 
 
 if __name__ == "__main__":
