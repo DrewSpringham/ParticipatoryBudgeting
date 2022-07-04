@@ -131,8 +131,10 @@ def interval_knapsack_table_reversed(E: Election):
         m[0][u] = math.inf
     for i in range(n + 1):
         m[i][0] = 0
-
-    for l in range(1 + max_total_approvals):
+    lower_bound = 0
+    upper_bound = 1 + max_total_approvals
+    while lower_bound < upper_bound:
+        l = (lower_bound + upper_bound + 1) // 2
         to_compute = [(n, l)]
         while len(to_compute) > 0:
             i, u = to_compute.pop()
@@ -149,10 +151,13 @@ def interval_knapsack_table_reversed(E: Election):
                         to_compute.append((k + 1, needed_util))
                     if m[i - 1][u] is None:
                         to_compute.append((i - 1, u))
-        if m[n][l] > W:
-            break
 
-    return m
+        if m[n][l] > W:
+            upper_bound = l - 1
+        else:
+            lower_bound = l
+
+    return m, upper_bound
 
 
 def from_table_reversed(E, P, m, i, u):
@@ -173,16 +178,8 @@ def from_table_reversed(E, P, m, i, u):
 
 
 def interval_knapsack_projects_reversed(E):
-    m = interval_knapsack_table_reversed(E)
+    m, best_util = interval_knapsack_table_reversed(E)
     n = len(E.projects)
-    v = len(E.voters)
-    W = E.budget
     P = list(sorted(E.projects, key=lambda p: p.end))
-    best_util = 0
-    for u in range(1 + n * v):
-        if m[n][u] <= W:
-            best_util = u
-        else:
-            break
     proj_set = from_table_reversed(E, P, m, n, best_util)
     return proj_set
