@@ -36,35 +36,59 @@ def compute_preceding_projects(P):
 
 
 def interval_knapsack_table(E: Election):
+    """
+    Compute the knapsack table for E using the standard knapsack table format: rows representing how many projects
+    we are considering, columns representing weight limit
+    :param E:
+    :return m: the (partial) knapsack table, with sufficient entries filled to compute optimal project set
+    """
+    # number of projects
     n = len(E.projects)
+    # Projects asc. sorted by end point
     P = list(sorted(E.projects, key=lambda p: p.end))
     W = E.budget
     # set up table
     m = [[None for _ in range(W + 1)] for _ in range(n + 1)]
+    # If we consider no projects, the best utility we can achieve is 0, so weight is irrelevant
     for w in range(W + 1):
         m[0][w] = 0
+    # We compute table entries on demand instead of the whole table, so we set up a stack
+    # we wish to compute the (n,W) entry, as this corresponds to finding the best utility from all n projects and
+    # weight limit of W
     to_compute = [(n, W)]
-    j_to_k = compute_preceding_projects(P)
+    # We compute for every project p the project q whose endpoint is furthest to the right of p and not
+    # overlapping with p
+    prec_project = compute_preceding_projects(P)
+    # We shall stop once we have computed all table entries we need to compute
     while len(to_compute) > 0:
-        j, w = to_compute.pop()
-        wi = P[j - 1].cost
-        k = j_to_k[j]
+        i, w = to_compute.pop()
+        proj_index = i - 1
+        proj = P[proj_index]
+        wi = proj.cost
+        # prec_index is the index of P of the precding project
+        prec_index = prec_project[i]
+        # if, for this weight limit w, we could ever include the i'th project in the set, the optimal value is the same
+        # as not considering project i
         if wi > w:
-            if m[j - 1][w] is None:
-                to_compute.append((j, w))
-                to_compute.append((j - 1, w))
+            # we may not have already computed this value, so we'll put the current (i,w) back on the stack and add
+            # the compuation of (i-1,w) on the stack
+            if m[i - 1][w] is None:
+                to_compute.append((i, w))
+                to_compute.append((i - 1, w))
             else:
-                m[j][w] = m[j - 1][w]
+                m[i][w] = m[i - 1][w]
         else:
-            vi = E.approvals_by_project[P[j - 1]]
-            if m[j - 1][w] is not None and m[k + 1][w - wi] is not None:
-                m[j][w] = max(m[j - 1][w], vi + m[k + 1][w - wi])
+            util = E.approvals_by_project[proj]
+            if m[i - 1][w] is not None and m[prec_index + 1][w - wi] is not None:
+                m[i][w] = max(m[i - 1][w], util + m[prec_index + 1][w - wi])
             else:
-                to_compute.append((j, w))
-                if m[j - 1][w] is None:
-                    to_compute.append((j - 1, w))
-                if m[k + 1][w - wi] is None:
-                    to_compute.append((k + 1, w - wi))
+                # We can't compute (i,w) yet because some computation we depend on has not been computed, so we add it
+                # back to the stack so we can come back to it later
+                to_compute.append((i, w))
+                if m[i - 1][w] is None:
+                    to_compute.append((i - 1, w))
+                if m[prec_index + 1][w - wi] is None:
+                    to_compute.append((prec_index + 1, w - wi))
     return m
 
 
@@ -97,18 +121,18 @@ def interval_knapsack_projects(E):
 
 def interval_knapsack_table_reversed(E: Election):
     n = len(E.projects)
-    v = len(E.voters)
+    max_total_approvals = sum([E.approvals_by_project[p] for p in E.projects])
     P = list(sorted(E.projects, key=lambda p: p.end))
     W = E.budget
     # set up table
-    m = [[None for _ in range(1 + n * v)] for _ in range(n + 1)]
+    m = [[None for _ in range(1 + max_total_approvals)] for _ in range(n + 1)]
     j_to_k = compute_preceding_projects(P)
-    for u in range(1 + n * v):
+    for u in range(1 + max_total_approvals):
         m[0][u] = math.inf
     for i in range(n + 1):
         m[i][0] = 0
 
-    for l in range(1 + n * v):
+    for l in range(1 + max_total_approvals):
         to_compute = [(n, l)]
         while len(to_compute) > 0:
             i, u = to_compute.pop()
