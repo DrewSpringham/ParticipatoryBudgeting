@@ -132,7 +132,7 @@ def interval_knapsack_table_reversed(E: Election):
     for i in range(n + 1):
         m[i][0] = 0
     lower_bound = 0
-    upper_bound = 1 + max_total_approvals
+    upper_bound = max_total_approvals
     while lower_bound < upper_bound:
         l = (lower_bound + upper_bound + 1) // 2
         to_compute = [(n, l)]
