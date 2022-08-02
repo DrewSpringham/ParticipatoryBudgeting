@@ -1,4 +1,5 @@
 import math
+import sys
 
 from src.election_instance import *
 
@@ -89,6 +90,7 @@ def interval_knapsack_table(E: Election):
                     to_compute.append((i - 1, w))
                 if m[prec_index + 1][w - wi] is None:
                     to_compute.append((prec_index + 1, w - wi))
+    print(sum([sys.getsizeof(l) for l in m]))
     return m
 
 
@@ -138,19 +140,18 @@ def interval_knapsack_table_reversed(E: Election):
         to_compute = [(n, l)]
         while len(to_compute) > 0:
             i, u = to_compute.pop()
-            if m[i][u] is None:
-                vi = E.approvals_by_project[P[i - 1]]
-                wi = P[i - 1].cost
-                k = j_to_k[i]
-                needed_util = max(u - vi, 0)
-                if m[k + 1][needed_util] is not None and m[i - 1][u] is not None:
-                    m[i][u] = min(wi + m[k + 1][needed_util], m[i - 1][u])
-                else:
-                    to_compute.append((i, u))
-                    if m[k + 1][needed_util] is None:
-                        to_compute.append((k + 1, needed_util))
-                    if m[i - 1][u] is None:
-                        to_compute.append((i - 1, u))
+            vi = E.approvals_by_project[P[i - 1]]
+            wi = P[i - 1].cost
+            k = j_to_k[i]
+            needed_util = max(u - vi, 0)
+            if m[k + 1][needed_util] is not None and m[i - 1][u] is not None:
+                m[i][u] = min(wi + m[k + 1][needed_util], m[i - 1][u])
+            else:
+                to_compute.append((i, u))
+                if m[k + 1][needed_util] is None:
+                    to_compute.append((k + 1, needed_util))
+                if m[i - 1][u] is None:
+                    to_compute.append((i - 1, u))
 
         if m[n][l] > W:
             upper_bound = l - 1
