@@ -1,4 +1,5 @@
 import os
+import timeit
 
 from tqdm import tqdm
 
@@ -14,7 +15,7 @@ def real_instances(rule, up_to=None):
         files = files[:up_to]
     for filename in tqdm(files):
         f = os.path.join(directory, filename)
-
+        print(f)
         # checking if it is a file
         if os.path.isfile(f):
             E = convert_to_election(f)
@@ -26,5 +27,12 @@ def real_instances(rule, up_to=None):
 
 
 if __name__ == "__main__":
-    real_instances(interval_knapsack_projects_reversed)
-    real_instances(interval_knapsack_projects)
+    E = convert_to_election("pb_files_loc/poland_warszawa_2020_.pb")
+    start = timeit.default_timer()
+    r1 = interval_knapsack_projects_reversed(E)
+    end = timeit.default_timer()
+    print(end - start)
+    start = timeit.default_timer()
+    r2 = interval_knapsack_projects(E)
+    end = timeit.default_timer()
+    print(end - start)
