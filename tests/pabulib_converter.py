@@ -6,7 +6,7 @@ from src.election_instance import Election, Project
 from tests.random_instances import random_project
 
 
-def convert_to_election(filepath):
+def convert_to_election(filepath, new_id):
     meta = {}
     projects = set()
     voters = set()
@@ -25,6 +25,11 @@ def convert_to_election(filepath):
             meta['budget'] = meta['budget'][:comma]
         except ValueError:
             pass
+        try:
+            election_id = meta['election_id']
+        except KeyError:
+
+            election_id = new_id
         line_number += 1
         l = lines[line_number].replace(" ", "").split(";")
         id_index = l.index("project_id")
@@ -63,13 +68,14 @@ def convert_to_election(filepath):
             voters.add(voter)
     if meta["vote_type"] != "approval":
         raise ValueError("Cannot operate on non-approval elections!")
-    return Election(voters, projects, approvals, int(meta["budget"]))
+    return Election(voters, projects, approvals, election_id, int(meta["budget"]))
 
 
 def convert_to_file(E, filepath):
     lines = []
     lines.append("META")
     lines.append("key; value")
+    lines.append(f"election_id; {E.election_id}")
     lines.append(f"num_projects; {len(E.projects)}")
     lines.append(f"num_votes; {len(E.voters)}")
     lines.append(f"budget; {E.budget}")
@@ -94,11 +100,13 @@ def convert_to_file(E, filepath):
 def convert_real_instances():
     read_directory = "pb_files"
     write_directory = "pb_files_loc"
+    i = 1
     for filename in tqdm(os.listdir(read_directory)):
         f = os.path.join(read_directory, filename)
         # checking if it is a file
         if os.path.isfile(f):
-            E = convert_to_election(f)
+            E = convert_to_election(f, i)
+            i += 1
             convert_to_file(E, write_directory + "/" + filename)
 
 

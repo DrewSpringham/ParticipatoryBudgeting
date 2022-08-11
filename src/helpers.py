@@ -57,4 +57,4 @@ def reduce_weights(E):
         new_approvals[v] = set([old_to_new[p] for p in E.approvals[v]])
     new_budget = E.budget // divisor
 
-    return Election(E.voters, new_projects, new_approvals, new_budget)
+    return Election(E.voters, new_projects, new_approvals, None, new_budget)

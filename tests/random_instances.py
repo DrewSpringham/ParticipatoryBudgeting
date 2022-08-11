@@ -59,11 +59,11 @@ def random_instance(N, p):
     voters = [i for i in range(1, N + 1)]
     projects = []
     for i in range(p):
-        projects.append(random_project(1, 1000))
+        projects.append(random_project(5000, 100000))
     approvals = random_approvals(voters, projects)
     average_cost = sum([P.cost for P in projects]) / p
     budget = ceil(average_cost * random.randint(1, p))
-    E = Election(voters, projects, approvals, budget)
+    E = Election(voters, projects, approvals, None, budget)
     return E
 
 

@@ -18,14 +18,16 @@ class Project:
 class Election:
     _approvals_by_project = None
 
-    def __init__(self, voters, projects, approvals, budget=1):
+    def __init__(self, voters, projects, approvals, election_id, budget=1):
         """
 
+        :param election_id:
         :param voters: A set of voters
         :param projects: A set of Projects
         :param approvals: A dictionary, indexed by voters and containing set of Projects as values
         :param budget:
         """
+        self.election_id = election_id
         self.approvals = approvals
         self.voters = voters
         self.projects = projects
