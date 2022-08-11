@@ -50,14 +50,14 @@ def from_table_reversed(E, P, m, i, u):
         wi = P[i - 1].cost
         vi = E.approvals_by_project[P[i - 1]]
         j_to_k = compute_preceding_projects(P)
-        k = j_to_k[i]
+        k = j_to_k[i] + 1
         needed_util = max(u - vi, 0)
-        if m[i - 1][u] < wi + m[k + 1][needed_util]:
+        if m[i - 1][u] < wi + m[k][needed_util]:
             i = i - 1
             proj_set = from_table_reversed(E, P, m, i - 1, u)
         else:
             proj_set.add(P[i - 1])
-            i = k + 1
+            i = k
             u = needed_util
     return proj_set
 
