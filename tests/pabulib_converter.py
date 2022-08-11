@@ -1,5 +1,7 @@
 import os
 
+from tqdm import tqdm
+
 from src.election_instance import Election, Project
 from tests.random_instances import random_project
 
@@ -92,10 +94,13 @@ def convert_to_file(E, filepath):
 def convert_real_instances():
     read_directory = "pb_files"
     write_directory = "pb_files_loc"
-    for filename in os.listdir(read_directory):
+    for filename in tqdm(os.listdir(read_directory)):
         f = os.path.join(read_directory, filename)
         # checking if it is a file
         if os.path.isfile(f):
             E = convert_to_election(f)
             convert_to_file(E, write_directory + "/" + filename)
 
+
+if __name__ == "__main__":
+    convert_real_instances()
