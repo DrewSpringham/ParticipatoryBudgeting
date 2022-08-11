@@ -1,5 +1,4 @@
 import math
-import sys
 
 from src.election_instance import *
 
@@ -90,7 +89,6 @@ def interval_knapsack_table(E: Election):
                     to_compute.append((i - 1, w))
                 if m[prec_index + 1][w - wi] is None:
                     to_compute.append((prec_index + 1, w - wi))
-    print(sum([sys.getsizeof(l) for l in m]))
     return m
 
 
