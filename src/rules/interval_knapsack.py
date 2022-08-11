@@ -63,20 +63,20 @@ def interval_knapsack_table(E: Election):
 
 
 def from_table(E, P, m, i, w):
-    if i == 0:
-        return set()
-    wi = P[i - 1].cost
-    if wi > w:
-        return from_table(E, P, m, i - 1, w)
-    for k in range(i - 1, -2, -1):
-        if P[k].end < P[i - 1].start:
-            break
-    k = k + 1
-    if m[i - 1][w] > m[k][w - wi] + E.approvals_by_project[P[i - 1]]:
-        proj_set = from_table(E, P, m, i - 1, w)
-    else:
-        proj_set = from_table(E, P, m, k, w - wi)
-        proj_set.add(P[i - 1])
+    proj_set = set()
+    while i > 0:
+        wi = P[i - 1].cost
+        if wi > w:
+            i = i - 1
+        j_to_k = compute_preceding_projects(P)
+        k = j_to_k[i]
+        if m[i - 1][w] > m[k][w - wi] + E.approvals_by_project[P[i - 1]]:
+            i = i - 1
+        else:
+            proj_set.add(P[i - 1])
+            i = k + 1
+            w = w - wi
+
     return proj_set
 
 
