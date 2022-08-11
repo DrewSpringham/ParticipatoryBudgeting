@@ -1,5 +1,4 @@
 import os
-import os
 import timeit
 from math import log
 
@@ -8,7 +7,7 @@ from matplotlib import pyplot as plt
 from scipy import stats
 from tqdm import tqdm
 
-from src.rules.interval_knapsack import interval_knapsack_projects_reversed
+from src.rules.reverse_interval_knapsack import interval_knapsack_projects_reversed
 from tests.pabulib_converter import convert_to_election
 
 
