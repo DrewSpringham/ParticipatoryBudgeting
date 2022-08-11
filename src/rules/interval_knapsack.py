@@ -70,7 +70,8 @@ def from_table(E, P, m, i, w):
             i = i - 1
         j_to_k = compute_preceding_projects(P)
         k = j_to_k[i] + 1
-        if m[i - 1][w] > m[k][w - wi] + E.approvals_by_project[P[i - 1]]:
+
+        if w < wi or m[i - 1][w] > m[k][w - wi] + E.approvals_by_project[P[i - 1]]:
             i = i - 1
         else:
             proj_set.add(P[i - 1])
