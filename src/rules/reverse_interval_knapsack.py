@@ -54,7 +54,6 @@ def from_table_reversed(E, P, m, i, u):
         needed_util = max(u - vi, 0)
         if m[i - 1][u] < wi + m[k][needed_util]:
             i = i - 1
-            proj_set = from_table_reversed(E, P, m, i - 1, u)
         else:
             proj_set.add(P[i - 1])
             i = k
