@@ -1,3 +1,5 @@
+import random
+import string
 from collections import defaultdict
 
 
@@ -27,11 +29,15 @@ class Election:
         :param approvals: A dictionary, indexed by voters and containing set of Projects as values
         :param budget:
         """
-        self.election_id = election_id
+
         self.approvals = approvals
         self.voters = voters
         self.projects = projects
         self.budget = budget
+        if election_id is None:
+            self.election_id = ''.join(random.choice(string.ascii_letters) for i in range(64))
+        else:
+            self.election_id = election_id
 
     @property
     def approvals_by_project(self):

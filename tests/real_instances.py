@@ -22,7 +22,7 @@ def real_instances(up_to=None):
         print(f)
         # checking if it is a file
         if os.path.isfile(f):
-            E = convert_to_election(f)
+            E = convert_to_election(f, count)
             yield E
             count += 1
 

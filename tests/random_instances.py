@@ -1,5 +1,4 @@
 import pickle
-import random
 from math import ceil
 
 from tqdm import tqdm
@@ -62,7 +61,7 @@ def random_instance(N, p):
         projects.append(random_project(5000, 100000))
     approvals = random_approvals(voters, projects)
     average_cost = sum([P.cost for P in projects]) / p
-    budget = ceil(average_cost * random.randint(1, p))
+    budget = ceil(average_cost * random.randint(1, p) * random.random())
     E = Election(voters, projects, approvals, None, budget)
     return E
 
