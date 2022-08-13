@@ -58,3 +58,21 @@ def reduce_weights(E):
     new_budget = E.budget // divisor
 
     return Election(E.voters, new_projects, new_approvals, None, new_budget)
+
+
+def is_single(E):
+    single = True
+    for v in E.voters:
+        if len(E.approvals[v]) != 1:
+            single = False
+    return single
+
+
+def check_EJR_single_approval(E, W):
+    D = 0
+    for p in E.projects:
+        G_size = E.approvals_by_project[p]
+        req_size = p.cost * len(E.voters) / E.budget
+        if G_size >= req_size and p not in W:
+            D = max(D, G_size / req_size - 1)
+    return D
