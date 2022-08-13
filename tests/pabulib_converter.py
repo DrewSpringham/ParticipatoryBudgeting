@@ -29,7 +29,7 @@ def convert_to_election(filepath, new_id):
             election_id = meta['election_id']
         except KeyError:
 
-            election_id = new_id
+            election_id = os.path.basename(filepath)
         line_number += 1
         l = lines[line_number].replace(" ", "").split(";")
         id_index = l.index("project_id")
