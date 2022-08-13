@@ -12,7 +12,7 @@ from tests.pabulib_converter import convert_to_election
 
 
 def real_instances(up_to=None):
-    directory = "C:/Users/Student/Documents/GitHub/PB/tests/pb_files_loc"
+    directory = "../tests/pb_files_loc/"
     count = 0
     files = os.listdir(directory)
     if up_to is not None:
