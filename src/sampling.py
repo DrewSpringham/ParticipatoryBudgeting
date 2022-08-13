@@ -9,13 +9,20 @@ from tqdm import trange
 from src.election_instance import Election
 from src.helpers import check_EJR_single_approval, is_single
 from src.rules.BasicSingleEJR import basicejr
+from tests.pabulib_converter import convert_to_election
+from tests.random_instances import random_instances
 from tests.real_instances import real_instances
 
 if __name__ == "__main__":
-    # f = "../tests/pb_files/poland_wroclaw_2015_from-500.pb"
-    source = real_instances()
+    f = "../tests/pb_files/poland_wroclaw_2015_from-500.pb"
     source_name = "real"
 
+    if source_name == "real":
+        source = real_instances()
+    if source_name == "only":
+        source = [convert_to_election(f)]
+    if source_name == "random":
+        source = random_instances(50, 1000, 300000, 3, 70)
     for E in source:
         try:
             elections = {'election_id': [], 'voters': [], 'projects': [], 'budget': [], 'min_cost': []}
