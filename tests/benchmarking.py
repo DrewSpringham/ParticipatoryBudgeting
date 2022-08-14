@@ -1,7 +1,7 @@
 import timeit
+from math import ceil
 
 import pandas as pd
-from openpyxl import load_workbook
 
 from src.rules.interval_knapsack import interval_knapsack_projects
 from src.rules.reverse_interval_knapsack import interval_knapsack_projects_reversed
@@ -13,7 +13,7 @@ def generate(data_source, rules):
     elections = {'election_id': [], 'voters': [], 'projects': [], 'budget': []}
     times = {'election_id': [], 'rule_id': [], 'time': []}
     if data_source == 'random':
-        source = random_instances(50, 1000, 300000, 3, 70)
+        source = random_instances(10, 1000, 300000, 3, 70)
     elif data_source == 'real':
         source = real_instances()
     else:
@@ -31,50 +31,30 @@ def generate(data_source, rules):
             elections['budget'].append(E.budget)
             for (rule, rule_id) in rules:
                 estimate = None
-                if rule_id == 0:
-                    estimate = 4.911e-7 * len(E.projects) * E.budget
-                elif rule_id == 1:
-                    estimate = 4.322e-8 * len(E.projects) * E.budget
-                elif rule_id == 2:
-                    estimate = 2.327e-8 * len(E.voters) * len(E.projects) ** 2
-                if estimate <= 600:
-                    start = timeit.default_timer()
-                    ik_result = rule(E)
-                    end = timeit.default_timer()
-                    time = end - start
-                    print(f"Finished on rule {rule_id}")
-                    times['election_id'].append(election_id)
-                    times['rule_id'].append(rule_id)
-                    times['time'].append(time)
-        raise KeyboardInterrupt
-    except:
-        try:
-            path = f"benchmarks_{data_source}.xlsx"
-            with pd.ExcelWriter(path, mode="a", if_sheet_exists='overlay', engine="openpyxl") as writer:
 
-                election_frame = pd.DataFrame(elections)
-                times_frame = pd.DataFrame(times)
-                book = load_workbook(path)
-                writer.book = book
-                writer.sheets = {ws.title: ws for ws in book.worksheets}
-                election_frame.to_excel(writer, startrow=writer.sheets['Elections'].max_row, header=False, index=False,
-                                        sheet_name="Elections")
-                times_frame.to_excel(writer, startrow=writer.sheets['Times'].max_row, header=False, index=False,
-                                     sheet_name="Times")
+                start = timeit.default_timer()
+                ik_result = rule(E)
+                end = timeit.default_timer()
+                time = end - start
+                print(f"Finished on rule {rule_id}")
+                times['election_id'].append(election_id)
+                times['rule_id'].append(rule_id)
+                times['time'].append(time)
+    finally:
+        try:
+            election_frame = pd.DataFrame(elections)
+            res_frame = pd.DataFrame(times)
+            election_frame.to_csv(f'bench_elections_{data_source}.csv', mode='a', index=False, header=False)
+            res_frame.to_csv(f'bench_results_{data_source}.csv', mode='a', index=False, header=False)
         except PermissionError:
             t = timeit.default_timer()
-            path = f"benchmarks_{data_source}_{t}.xlsx"
-            with pd.ExcelWriter(path, if_sheet_exists='overlay', engine="openpyxl") as writer:
 
-                election_frame = pd.DataFrame(elections)
-                times_frame = pd.DataFrame(times)
-                book = load_workbook(path)
-                writer.book = book
-                writer.sheets = {ws.title: ws for ws in book.worksheets}
-                election_frame.to_excel(writer, startrow=writer.sheets['Elections'].max_row, header=False, index=False,
-                                        sheet_name="Elections")
-                times_frame.to_excel(writer, startrow=writer.sheets['Times'].max_row, header=False, index=False,
-                                     sheet_name="Times")
+            election_frame = pd.DataFrame(elections)
+            res_frame = pd.DataFrame(times)
+            election_frame.to_csv(f'bench_elections_{ceil(t)}.csv', index=False, header=False)
+            res_frame.to_csv(f'bench_results_{ceil(t)}.csv', index=False, header=False)
+        finally:
+            print("Saved")
 
 
 if __name__ == "__main__":
