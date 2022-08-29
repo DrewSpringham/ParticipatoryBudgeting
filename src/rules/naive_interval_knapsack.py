@@ -1,6 +1,8 @@
 from src.election_instance import Election
 
 
+# TODO:document
+
 def naive_from_table(E, P, m, i, w):
     if i == 0:
         return set()

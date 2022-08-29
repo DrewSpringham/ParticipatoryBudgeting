@@ -5,8 +5,12 @@ from tqdm import tqdm
 from src.election_instance import Election, Project
 from tests.random_instances import random_project
 
+"""
+Boring code to convert .pb files to elections and vice versa. Made modification to file format to include project positions
+"""
 
-def convert_to_election(filepath, new_id):
+
+def convert_to_election(filepath):
     meta = {}
     projects = set()
     voters = set()
@@ -105,7 +109,7 @@ def convert_real_instances():
         f = os.path.join(read_directory, filename)
         # checking if it is a file
         if os.path.isfile(f):
-            E = convert_to_election(f, i)
+            E = convert_to_election(f)
             i += 1
             convert_to_file(E, write_directory + "/" + filename)
 
